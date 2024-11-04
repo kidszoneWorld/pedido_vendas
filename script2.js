@@ -119,6 +119,7 @@ document.getElementById('cnpj').addEventListener('blur', function () {
         document.getElementById('cod_cliente').value = cliente[17];
         document.getElementById('pay').value = cliente[14];
         document.getElementById('group').value = cliente[19];
+        document.getElementById('transp').value = cliente[20];
     } else {
         alert("Cliente não encontrado.");
     }
