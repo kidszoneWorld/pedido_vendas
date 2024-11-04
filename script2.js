@@ -91,7 +91,7 @@ function buscarListaPrecos(cod) {
 
 // Função para buscar os dados do cliente pelo CNPJ
 function buscarCliente(cnpj) {
-    for (let i = 2; i < clientesData.length; i++) {
+    for (let i = 1; i < clientesData.length; i++) {
         if (clientesData[i][1].toString() === cnpj) {
             return clientesData[i];
         }
