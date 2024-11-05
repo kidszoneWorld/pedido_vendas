@@ -257,18 +257,18 @@ function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) {
 
 
 
-
+        ///////Calcula o valor com IPI/////////////////////////////////////////////////////////////////////////////////
         if (codProduto) {
                 let ipi = Number(cells[5].querySelector('input').value) / 100; // Converte o valor de IPI para decimal
                 let valorUnitario = Number(cells[6].querySelector('input').value); // Valor unitário
                 
                 // Calcula o valor com IPI
                 let valorComIPI = valorUnitario * (1 + ipi);
-                cells[7].querySelector('input').value = valorComIPI.toFixed(2); // Formata para duas casas decimais
+                cells[7].querySelector('input').value = valorComIPI.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         } else {
         cells[7].querySelector('input').value = '';
         }
-
+        ///////Calcula o valor com IPI/////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -282,7 +282,28 @@ function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) {
     
 
 
+        // Função para atualizar o valor total
+        function atualizarValorTotal() {
+            if (codProduto) {
+                let quantidade = Number(cells[1].querySelector('input').value); // Quantidade digitada
+                let ipi = Number(cells[5].querySelector('input').value) / 100; // Converte o valor de IPI para decimal
+                let valorUnitario = Number(cells[6].querySelector('input').value); // Valor unitário
+                
+                // Calcula o valor com IPI
+                let valorComIPI = valorUnitario * (1 + ipi);
 
+                // Calcula o valor total com a quantidade
+                let valorTotal = valorComIPI * quantidade;
+                
+                // Atribui o valor total à célula correspondente
+                cells[8].querySelector('input').value = valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); // Formata para duas casas decimais
+            } else {
+                cells[8].querySelector('input').value = '';
+            }
+        }
 
-  
+        // Adiciona o evento de escuta para detectar mudanças na quantidade
+        cells[1].querySelector('input').addEventListener('input', atualizarValorTotal);
+
+        
 }
