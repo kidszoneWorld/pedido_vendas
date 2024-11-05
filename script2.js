@@ -120,6 +120,8 @@ document.getElementById('cnpj').addEventListener('blur', function () {
         document.getElementById('pay').value = cliente[14];
         document.getElementById('group').value = cliente[19];
         document.getElementById('transp').value = cliente[20];
+        document.getElementById('codgroup').value = cliente[18];
+      
     } else {
         alert("Cliente não encontrado.");
     }
@@ -136,7 +138,7 @@ document.getElementById('adicionarLinha').addEventListener('click', function () 
     let tbody = document.querySelector('#dadosPedido tbody');
     let tr = document.createElement('tr');
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 9; i++) {
 
         let td = document.createElement('td');
         let input = document.createElement('input');
@@ -197,14 +199,90 @@ document.getElementById('excluirLinha').addEventListener('click', function () {
 
 });
 
+
+
 // Função para preencher os dados da linha com os cálculos baseados no IPI e R$ Unitário
 function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) { 
 
-    let cells = tr.getElementsByTagName('td');
-        // Preencher campos da linha
-        cells[1].querySelector('input').value = '1'; // Quantidade
-        cells[2].querySelector('input').value = listaPrecos[9]; // UV
-        cells[3].querySelector('input').value = listaPrecos[10]; // Pack
-        cells[4].querySelector('input').value = listaPrecos[4]; // Descrição
+        let cells = tr.getElementsByTagName('td');
+        let codProduto = cells[0].querySelector('input').value; // Código do produto
+        let codGroup = document.getElementById('codgroup').value; // Código do grupo do cliente
 
+       
+        // Define o código a ser usado para a busca (com ou sem codGroup)
+        let codigoConcatenado = codGroup ? `${codGroup}-${codProduto}` : codProduto;
+
+
+        console.log(codigoConcatenado)
+
+        // Busca o item concatenado na lista de preços
+        let precoEncontrado = listaPrecosData.find(item => item[0] === codigoConcatenado);
+
+
+        //////valor IPI //////////////////////////////////////////////////////
+        if (precoEncontrado) {
+            // Se o código concatenado existir, atribui o valor de IPI correspondente
+            cells[5].querySelector('input').value = precoEncontrado[12] * 100; // IPI
+        } else {
+            // Se não encontrar o código concatenado, verifica apenas pelo código do produto
+            let itemPorCodigo = listaPrecosData.find(item => item[2] == codProduto);
+
+            if (itemPorCodigo) {
+                cells[5].querySelector('input').value = itemPorCodigo[12] * 100 ; // IPI correspondente ao produto
+            } else {
+                cells[5].querySelector('input').value = ''; // Limpa o campo se não encontrar
+            }
+        }
+          //////valor IPI //////////////////////////////////////////////////////
+
+
+
+        //Verifica se o produto está em promoção
+        let produtoPromocao = promocaoData.find(item => item[0] == codProduto);
+
+
+
+        /////// Valor unitário//////////////////////////////////////////////////////////////   
+        if (produtoPromocao) {
+            // Se o produto está em promoção, usa o valor do índice 5 (Custo cxa) da promoção
+            cells[6].querySelector('input').value = produtoPromocao[5];
+        } else {
+            // Caso contrário, busca o item concatenado na lista de preços
+            let precoEncontrado = listaPrecosData.find(item => item[0] === codigoConcatenado);
+            cells[6].querySelector('input').value = precoEncontrado[11];
+
+                }
+         /////// Valor unitário//////////////////////////////////////////////////////////////  
+
+
+
+
+
+        if (codProduto) {
+                let ipi = Number(cells[5].querySelector('input').value) / 100; // Converte o valor de IPI para decimal
+                let valorUnitario = Number(cells[6].querySelector('input').value); // Valor unitário
+                
+                // Calcula o valor com IPI
+                let valorComIPI = valorUnitario * (1 + ipi);
+                cells[7].querySelector('input').value = valorComIPI.toFixed(2); // Formata para duas casas decimais
+        } else {
+        cells[7].querySelector('input').value = '';
+        }
+
+
+
+
+        // Preenchimento dos demais campos da linha com base nos dados da lista de preços
+        if (listaPrecos) {
+            cells[1].querySelector('input').value = '1'; // Quantidade
+            cells[2].querySelector('input').value = listaPrecos[9]; // UV
+            cells[3].querySelector('input').value = listaPrecos[10]; // Pack
+            cells[4].querySelector('input').value = listaPrecos[4]; // Descrição
+        }
+    
+
+
+
+
+  
 }

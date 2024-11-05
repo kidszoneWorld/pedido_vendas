@@ -67,37 +67,37 @@
                 <input type="text" id="razao_social" placeholder="Razão Social" readonly>
 
                 <label for="cod_cliente" class="label-espaco-esquerda">CÓD CLIENTE:</label> 
-                <input type="text" id="cod_cliente" placeholder="Código Cliente">
+                <input type="text" id="cod_cliente" placeholder="Código Cliente" readonly>
 
                 <label for="endereco">ENDEREÇO:</label> 
-                <input type="text" id="endereco" placeholder="Endereço">
+                <input type="text" id="endereco" placeholder="Endereço"readonly>
 
                 <label for="bairro" class="label-espaco-esquerda">BAIRRO:</label> 
-                <input type="text" id="bairro" placeholder="Bairro">
+                <input type="text" id="bairro" placeholder="Bairro" readonly>
 
                 <label for="cidade">CIDADE:</label> 
-                <input type="text" id="cidade" placeholder="Cidade">
+                <input type="text" id="cidade" placeholder="Cidade"readonly>
 
                 <label for="uf" class="label-espaco-esquerda">UF:</label> 
-                <input type="text" id="uf" placeholder="UF" maxlength="2">
+                <input type="text" id="uf" placeholder="UF" maxlength="2" readonly>
 
                 <label for="cep">CEP:</label> 
-                <input type="text" id="cep" placeholder="CEP">
+                <input type="text" id="cep" placeholder="CEP" readonly>
 
                 <label for="telefone" class="label-espaco-esquerda">TEL:</label> 
-                <input type="text" id="telefone" placeholder="Telefone">
+                <input type="text" id="telefone" placeholder="Telefone"readonly>
 
                 <label for="email">E-MAIL</label> 
-                <input type="text" id="email" placeholder="E-mail">
+                <input type="text" id="email" placeholder="E-mail" readonly>
 
                 <label for="contato" class="label-espaco-esquerda">CONTATOS:</label> 
-                <input type="text" id="contato" placeholder="Contato">
+                <input type="text" id="contato" placeholder="Contato" readonly>
 
                 <label for="contato"  >E-MAIL FISCAL:</label> 
-                <input type="text" id="email_fiscal" placeholder="E-mail Fiscal">
+                <input type="text" id="email_fiscal" placeholder="E-mail Fiscal" readonly>
 
                 <label for="transp" class="label-espaco-esquerda" >TRANSPORTE:</label> 
-                <input type="text" id="transp" placeholder="Transportadora">
+                <input type="text" id="transp" placeholder="Transportadora" readonly>
 
             </form>
         </div>
@@ -114,7 +114,6 @@
                             <th>PACK</th>
                             <th>DESCRIÇÃO</th>
                             <th>IPI</th>
-                            <th>ST</th>
                             <th>R$ UNIT.</th>
                             <th>R$ C/ IPI</th>
                             <th>TOTAL R$</th>
@@ -137,8 +136,14 @@
                 <label for="pay">CONDIÇÃO PGTO:</label> 
                 <input type="text" id="pay">
 
+                <label class="spaceInputCod" for="codgroup">COD:</label> 
+                <input type="text" id="codgroup">
+
                 <label for="group">TABELA:</label> 
                 <input type="text" id="group">
+
+                <label for="volume">VOLUMES:</label> 
+                <input type="text" id="volume">
 
                 <label for="total">TOTAL PRODUTOS:</label> 
                 <input type="text" id="total">

@@ -114,23 +114,27 @@
 }
 
 /* Seção Condição de Pagamento e Observações */
-.payment-conditions, .observations {
+.payment-conditions {
     margin-top: 20px;
-    border: 1px solid #ddd;
-    padding: 10px;
+    border: 1px solid #1b1a1a;
+    padding: 15px;
 }
-.payment-conditions table {
+
+
+.payment-conditions label {
     width: 100%;
-    border-collapse: collapse;
-}
-.payment-conditions th, .payment-conditions td {
-    padding: 8px;
-    text-align: center;
-    border: 1px solid #ddd;
-}
-.payment-conditions th {
     background-color: #333;
     color: #ffffff;
+    padding: 5px;
+}
+
+.payment-conditions .spaceInputCod{
+  width: 30% ;
+
+}
+
+.observations{
+    margin-top: 20px;
 }
 .observations .obs-title {
     background-color: #333;
@@ -140,7 +144,7 @@
     text-align: center;
 }
 .observations textarea {
-    width: 100%;
+    width: 98%;
     height: 100px;
     margin-top: 10px;
     resize: vertical;
