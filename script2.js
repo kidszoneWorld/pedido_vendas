@@ -1,4 +1,3 @@
-
 //// Variaveis globais 
 let clientesData;
 let promocaoData;
@@ -46,7 +45,6 @@ fetch('ICMS-ST.json')
 });
 
 // Fim -- busca dos dados -------------------------------------------------------------------------------------////////
-
 
 
 
@@ -131,6 +129,80 @@ document.getElementById('cnpj').addEventListener('blur', function () {
 
 
 
+// Função para zerar os campos da tabela "DADOS PEDIDO"
+function zerarCamposPedido() {
+    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+    linhas.forEach(tr => {
+        const inputs = tr.querySelectorAll('input');
+        inputs.forEach(input => input.value = ''); // Zera o valor de cada input
+    });
+
+    // Atualiza os totais após zerar os campos
+    atualizarTotalComImposto();
+    atualizarTotalVolumes();
+    atualizarTotalProdutos();
+}
+
+// Adiciona o evento para zerar os campos quando o tipo de pedido for alterado
+document.getElementById('tipo_pedido').addEventListener('change', zerarCamposPedido);
+
+
+// Função para atualizar o total com imposto de todas as linhas
+function atualizarTotalComImposto() {
+    let total = 0;
+    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+    
+    linhas.forEach(tr => {
+        const cell = tr.cells[8]?.querySelector('input'); // Verifica se cell[8] e input existem
+        if (cell && cell.value) {
+            const cellValue = cell.value.replace("R$", "").replace(/\./g, "").replace(",", ".");
+            const valor = parseFloat(cellValue);
+            if (!isNaN(valor)) {
+                total += valor;
+            }
+        }
+    });
+    
+    document.getElementById('total_imp').value = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// Função para atualizar o total de volumes (quantidades) de todas as linhas
+function atualizarTotalVolumes() {
+    let totalVolumes = 0;
+    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+
+    linhas.forEach(tr => {
+        const cell = tr.cells[1]?.querySelector('input'); // Verifica se cell[1] e input existem
+        if (cell && cell.value) {
+            const quantidade = parseFloat(cell.value.replace(",", "."));
+            if (!isNaN(quantidade)) {
+                totalVolumes += quantidade;
+            }
+        }
+    });
+
+    document.getElementById('volume').value = totalVolumes;
+}
+
+// Função para atualizar o total de produtos (quantidade * valor unitário)
+function atualizarTotalProdutos() {
+    let totalProdutos = 0;
+    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+
+    linhas.forEach(tr => {
+        const quantidadeCell = tr.cells[1]?.querySelector('input'); // Verifica se cell[1] e input existem
+        const valorUnitarioCell = tr.cells[6]?.querySelector('input'); // Verifica se cell[6] e input existem
+        if (quantidadeCell && valorUnitarioCell && quantidadeCell.value && valorUnitarioCell.value) {
+            const quantidade = parseFloat(quantidadeCell.value.replace(",", "."));
+            const valorUnitario = parseFloat(valorUnitarioCell.value.replace("R$", "").replace(/\./g, "").replace(",", "."));
+            if (!isNaN(quantidade) && !isNaN(valorUnitario)) {
+                totalProdutos += quantidade * valorUnitario;
+            }
+        }
+    });
+
+    document.getElementById('total').value = totalProdutos.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
 
 // Função para adicionar uma nova linha à tabela
 document.getElementById('adicionarLinha').addEventListener('click', function () {
@@ -148,9 +220,8 @@ document.getElementById('adicionarLinha').addEventListener('click', function () 
             input.addEventListener('blur', function () {
                 let tipoPedido = document.getElementById('tipo_pedido').value;
                 let cod = this.value;
-                let ufCliente = document.getElementById('uf').value; // Pegar UF do cliente
+                let ufCliente = document.getElementById('uf').value;
 
-                // Verificar se o item está fora de linha
                 if (verificarForaDeLinha(cod)) {
                     alert("Item fora de linha, favor digitar outro item");
                     this.value = '';
@@ -184,7 +255,9 @@ document.getElementById('adicionarLinha').addEventListener('click', function () 
         tr.appendChild(td);
     }
     tbody.appendChild(tr);
-
+    atualizarTotalComImposto(); // Atualiza o total após adicionar uma linha
+    atualizarTotalVolumes(); // Atualiza o total de volumes após adicionar uma linha
+    atualizarTotalProdutos(); // Atualiza o total de produtos após adicionar uma linha
 });
 
 // Função para remover a última linha da tabela
@@ -193,117 +266,99 @@ document.getElementById('excluirLinha').addEventListener('click', function () {
     let tbody = document.querySelector('#dadosPedido tbody');
     if (tbody.rows.length > 0) {
         tbody.deleteRow(tbody.rows.length - 1);
+        atualizarTotalComImposto(); // Atualiza o total após remover uma linha
+        atualizarTotalVolumes(); // Atualiza o total de volumes após remover uma linha
+        atualizarTotalProdutos(); // Atualiza o total de produtos após remover uma linha
     } else {
         alert("Nenhuma linha para remover");
     }
 
 });
 
-
-
 // Função para preencher os dados da linha com os cálculos baseados no IPI e R$ Unitário
 function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) { 
+    let cells = tr.getElementsByTagName('td');
+    let codProduto = cells[0].querySelector('input').value;
+    let codGroup = document.getElementById('codgroup').value;
 
-        let cells = tr.getElementsByTagName('td');
-        let codProduto = cells[0].querySelector('input').value; // Código do produto
-        let codGroup = document.getElementById('codgroup').value; // Código do grupo do cliente
+    let codigoConcatenado = codGroup ? `${codGroup}-${codProduto}` : codProduto;
+    let precoEncontrado = listaPrecosData.find(item => item[0] === codigoConcatenado);
 
-       
-        // Define o código a ser usado para a busca (com ou sem codGroup)
-        let codigoConcatenado = codGroup ? `${codGroup}-${codProduto}` : codProduto;
+    if (precoEncontrado) {
+        cells[5].querySelector('input').value = (precoEncontrado[12] * 100).toFixed(2) + '%';
+    } else {
+        let itemPorCodigo = listaPrecosData.find(item => item[2] == codProduto);
+        if (itemPorCodigo) {
+            cells[5].querySelector('input').value = (itemPorCodigo[12] * 100).toFixed(2) + '%';
+        } else {
+            cells[5].querySelector('input').value = '';
+        }
+    }
 
+    let produtoPromocao = promocaoData.find(item => item[0] == codProduto);
 
-        console.log(codigoConcatenado)
-
-        // Busca o item concatenado na lista de preços
+    if (produtoPromocao) {
+        cells[6].querySelector('input').value = Number(produtoPromocao[5]).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    } else {
         let precoEncontrado = listaPrecosData.find(item => item[0] === codigoConcatenado);
+        cells[6].querySelector('input').value = Number(precoEncontrado[11]).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
 
+    if (codProduto) {
+        let ipiStr = cells[5].querySelector('input').value.replace("%", "");
+        let ipi = Number(ipiStr) / 100;
+        let valorUnitarioStr = cells[6].querySelector('input').value.replace("R$", "").replace(/\./g, "").replace(",", ".");
+        let valorUnitario = Number(valorUnitarioStr);
 
-        //////valor IPI //////////////////////////////////////////////////////
-        if (precoEncontrado) {
-            // Se o código concatenado existir, atribui o valor de IPI correspondente
-            cells[5].querySelector('input').value = precoEncontrado[12] * 100; // IPI
+        if (!isNaN(valorUnitario)) {
+            let valorComIPI = valorUnitario * (1 + ipi);
+            cells[7].querySelector('input').value = valorComIPI.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         } else {
-            // Se não encontrar o código concatenado, verifica apenas pelo código do produto
-            let itemPorCodigo = listaPrecosData.find(item => item[2] == codProduto);
-
-            if (itemPorCodigo) {
-                cells[5].querySelector('input').value = itemPorCodigo[12] * 100 ; // IPI correspondente ao produto
-            } else {
-                cells[5].querySelector('input').value = ''; // Limpa o campo se não encontrar
-            }
+            cells[7].querySelector('input').value = '';
         }
-          //////valor IPI //////////////////////////////////////////////////////
-
-
-
-        //Verifica se o produto está em promoção
-        let produtoPromocao = promocaoData.find(item => item[0] == codProduto);
-
-
-
-        /////// Valor unitário//////////////////////////////////////////////////////////////   
-        if (produtoPromocao) {
-            // Se o produto está em promoção, usa o valor do índice 5 (Custo cxa) da promoção
-            cells[6].querySelector('input').value = produtoPromocao[5];
-        } else {
-            // Caso contrário, busca o item concatenado na lista de preços
-            let precoEncontrado = listaPrecosData.find(item => item[0] === codigoConcatenado);
-            cells[6].querySelector('input').value = precoEncontrado[11];
-
-                }
-         /////// Valor unitário//////////////////////////////////////////////////////////////  
-
-
-
-
-        ///////Calcula o valor com IPI/////////////////////////////////////////////////////////////////////////////////
-        if (codProduto) {
-                let ipi = Number(cells[5].querySelector('input').value) / 100; // Converte o valor de IPI para decimal
-                let valorUnitario = Number(cells[6].querySelector('input').value); // Valor unitário
-                
-                // Calcula o valor com IPI
-                let valorComIPI = valorUnitario * (1 + ipi);
-                cells[7].querySelector('input').value = valorComIPI.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        } else {
+    } else {
         cells[7].querySelector('input').value = '';
-        }
-        ///////Calcula o valor com IPI/////////////////////////////////////////////////////////////////////////////////
+    }
 
+    if (listaPrecos) {
+        cells[1].querySelector('input').value = '1';
+        cells[2].querySelector('input').value = listaPrecos[9];
+        cells[3].querySelector('input').value = listaPrecos[10];
+        cells[4].querySelector('input').value = listaPrecos[4];
+    }
 
+    function atualizarValorTotal() {
+        if (codProduto) {
+            let quantidade = Number(cells[1].querySelector('input').value);
+            let ipiStr = cells[5].querySelector('input').value.replace("%", "");
+            let ipi = Number(ipiStr) / 100;
+            let valorUnitarioStr = cells[6].querySelector('input').value.replace("R$", "").replace(/\./g, "").replace(",", ".");
+            let valorUnitario = Number(valorUnitarioStr);
 
-        // Preenchimento dos demais campos da linha com base nos dados da lista de preços
-        if (listaPrecos) {
-            cells[1].querySelector('input').value = '1'; // Quantidade
-            cells[2].querySelector('input').value = listaPrecos[9]; // UV
-            cells[3].querySelector('input').value = listaPrecos[10]; // Pack
-            cells[4].querySelector('input').value = listaPrecos[4]; // Descrição
-        }
-    
-
-
-        // Função para atualizar o valor total
-        function atualizarValorTotal() {
-            if (codProduto) {
-                let quantidade = Number(cells[1].querySelector('input').value); // Quantidade digitada
-                let ipi = Number(cells[5].querySelector('input').value) / 100; // Converte o valor de IPI para decimal
-                let valorUnitario = Number(cells[6].querySelector('input').value); // Valor unitário
-                
-                // Calcula o valor com IPI
+            if (!isNaN(valorUnitario)) {
                 let valorComIPI = valorUnitario * (1 + ipi);
-
-                // Calcula o valor total com a quantidade
                 let valorTotal = valorComIPI * quantidade;
+                cells[8].querySelector('input').value = valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                 
-                // Atribui o valor total à célula correspondente
-                cells[8].querySelector('input').value = valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); // Formata para duas casas decimais
+                atualizarTotalComImposto(); // Atualiza o total sempre que o valor total da linha mudar
+                atualizarTotalVolumes(); // Atualiza o total de volumes sempre que a quantidade mudar
+                atualizarTotalProdutos(); // Atualiza o total de produtos sempre que a quantidade ou o valor unitário mudar
             } else {
                 cells[8].querySelector('input').value = '';
             }
+        } else {
+            cells[8].querySelector('input').value = '';
         }
+    }
 
-        // Adiciona o evento de escuta para detectar mudanças na quantidade
-        cells[1].querySelector('input').addEventListener('input', atualizarValorTotal);
-
-        
+    cells[1].querySelector('input').addEventListener('input', function() {
+        atualizarValorTotal();
+        atualizarTotalVolumes(); // Atualiza o total de volumes ao modificar a quantidade
+        atualizarTotalProdutos(); // Atualiza o total de produtos ao modificar a quantidade
+    });
+    cells[6].querySelector('input').addEventListener('input', function() {
+        atualizarValorTotal();
+        atualizarTotalProdutos(); // Atualiza o total de produtos ao modificar o valor unitário
+    });
+    cells[8].querySelector('input').addEventListener('input', atualizarTotalComImposto); // Atualiza o total se "TOTAL R$" for modificado
 }

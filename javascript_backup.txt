@@ -1,9 +1,13 @@
-// Carregar dados do arquivo JSON de clientes
+//// Variaveis globais 
 let clientesData;
 let promocaoData;
 let foraDeLinhaData;
 let listaPrecosData;
 let icmsSTData;
+//// Variaveis globais 
+
+
+// Inicio -- busca dos dados -------------------------------------------------------------------------------------////////
 
 // Função para carregar o JSON de clientes
 fetch('Clientes.json')
@@ -28,27 +32,24 @@ fetch('Fora de linha.json')
 
 // Função para carregar o JSON de lista de preços
 fetch('Lista-precos.json')
-    .then(response => response.json())
-    .then(data => {
-        listaPrecosData = data;
-    });
+.then(response => response.json())
+.then(data => {
+    listaPrecosData = data;
+});
 
 // Função para carregar o JSON de ICMS-ST
 fetch('ICMS-ST.json')
-    .then(response => response.json())
-    .then(data => {
-        icmsSTData = data;
-    });
+.then(response => response.json())
+.then(data => {
+    icmsSTData = data;
+});
 
-// Função para buscar os dados do cliente pelo CNPJ
-function buscarCliente(cnpj) {
-    for (let i = 2; i < clientesData.length; i++) {
-        if (clientesData[i][1].toString() === cnpj) {
-            return clientesData[i];
-        }
-    }
-    return null;
-}
+// Fim -- busca dos dados -------------------------------------------------------------------------------------////////
+
+
+
+
+// Inicio -- Tratamento dos dados -------------------------------------------------------------------------------------////////
 
 // Função para buscar o produto em promoção
 function buscarPromocao(cod) {
@@ -80,22 +81,30 @@ function buscarListaPrecos(cod) {
     return null;
 }
 
-// Função para buscar dados no ICMS-ST
-function buscarICMSST(cod, uf) {
-    for (let i = 1; i < icmsSTData.length; i++) {
-        if (icmsSTData[i][0] == cod && icmsSTData[i][1] == uf) {
-            return icmsSTData[i];
+
+// Fim -- Tratamento dos dados -------------------------------------------------------------------------------------////////
+
+
+
+// Inicio -- Bloco dados do clientes-------------------------------------------------------------------------------------////////
+
+// Função para buscar os dados do cliente pelo CNPJ
+function buscarCliente(cnpj) {
+    for (let i = 1; i < clientesData.length; i++) {
+        if (clientesData[i][1].toString() === cnpj) {
+            return clientesData[i];
         }
     }
     return null;
-}
+ }
 
-// Preencher os campos ao digitar o CNPJ
+// Função para preencher os campos ao digitar o CNPJ
 document.getElementById('cnpj').addEventListener('blur', function () {
     let cnpj = this.value;
     let cliente = buscarCliente(cnpj);
     if (cliente) {
         document.getElementById('razao_social').value = cliente[3];
+        document.getElementById('ie').value = cliente[2];
         document.getElementById('representante').value = cliente[15];
         document.getElementById('endereco').value = cliente[8];
         document.getElementById('bairro').value = cliente[9];
@@ -103,29 +112,99 @@ document.getElementById('cnpj').addEventListener('blur', function () {
         document.getElementById('uf').value = cliente[11];
         document.getElementById('cep').value = cliente[12];
         document.getElementById('telefone').value = cliente[4];
+        document.getElementById('email').value = cliente[6];
         document.getElementById('email_fiscal').value = cliente[7];
         document.getElementById('contato').value = cliente[13];
+        document.getElementById('cod_cliente').value = cliente[17];
+        document.getElementById('pay').value = cliente[14];
+        document.getElementById('group').value = cliente[19];
+        document.getElementById('transp').value = cliente[20];
+        document.getElementById('codgroup').value = cliente[18];
+      
     } else {
         alert("Cliente não encontrado.");
     }
 });
 
+// Fim -- Bloco dados do clientes-------------------------------------------------------------------------------------////////
+
+
+
+// Função para atualizar o total com imposto de todas as linhas
+function atualizarTotalComImposto() {
+    let total = 0;
+    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+    
+    linhas.forEach(tr => {
+        const cell = tr.cells[8]?.querySelector('input'); // Verifica se cell[8] e input existem
+        if (cell && cell.value) {
+            const cellValue = cell.value.replace("R$", "").replace(/\./g, "").replace(",", ".");
+            const valor = parseFloat(cellValue);
+            if (!isNaN(valor)) {
+                total += valor;
+            }
+        }
+    });
+    
+    document.getElementById('total_imp').value = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// Função para atualizar o total de volumes (quantidades) de todas as linhas
+function atualizarTotalVolumes() {
+    let totalVolumes = 0;
+    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+
+    linhas.forEach(tr => {
+        const cell = tr.cells[1]?.querySelector('input'); // Verifica se cell[1] e input existem
+        if (cell && cell.value) {
+            const quantidade = parseFloat(cell.value.replace(",", "."));
+            if (!isNaN(quantidade)) {
+                totalVolumes += quantidade;
+            }
+        }
+    });
+
+    document.getElementById('volume').value = totalVolumes;
+}
+
+// Função para atualizar o total de produtos (quantidade * valor unitário)
+function atualizarTotalProdutos() {
+    let totalProdutos = 0;
+    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+
+    linhas.forEach(tr => {
+        const quantidadeCell = tr.cells[1]?.querySelector('input'); // Verifica se cell[1] e input existem
+        const valorUnitarioCell = tr.cells[6]?.querySelector('input'); // Verifica se cell[6] e input existem
+        if (quantidadeCell && valorUnitarioCell && quantidadeCell.value && valorUnitarioCell.value) {
+            const quantidade = parseFloat(quantidadeCell.value.replace(",", "."));
+            const valorUnitario = parseFloat(valorUnitarioCell.value.replace("R$", "").replace(/\./g, "").replace(",", "."));
+            if (!isNaN(quantidade) && !isNaN(valorUnitario)) {
+                totalProdutos += quantidade * valorUnitario;
+            }
+        }
+    });
+
+    document.getElementById('total').value = totalProdutos.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
 // Função para adicionar uma nova linha à tabela
 document.getElementById('adicionarLinha').addEventListener('click', function () {
+
     let tbody = document.querySelector('#dadosPedido tbody');
     let tr = document.createElement('tr');
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 9; i++) {
+
         let td = document.createElement('td');
         let input = document.createElement('input');
         input.type = 'text';
+
         if (i === 0) {
             input.addEventListener('blur', function () {
                 let tipoPedido = document.getElementById('tipo_pedido').value;
                 let cod = this.value;
-                let ufCliente = document.getElementById('uf').value; // Pegar UF do cliente
+                let ufCliente = document.getElementById('uf').value;
 
-                // Verificar se o item está fora de linha
                 if (verificarForaDeLinha(cod)) {
                     alert("Item fora de linha, favor digitar outro item");
                     this.value = '';
@@ -159,39 +238,111 @@ document.getElementById('adicionarLinha').addEventListener('click', function () 
         tr.appendChild(td);
     }
     tbody.appendChild(tr);
+    atualizarTotalComImposto(); // Atualiza o total após adicionar uma linha
+    atualizarTotalVolumes(); // Atualiza o total de volumes após adicionar uma linha
+    atualizarTotalProdutos(); // Atualiza o total de produtos após adicionar uma linha
 });
 
-// Função para preencher os dados da linha
-function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) {
-    let cells = tr.getElementsByTagName('td');
+// Função para remover a última linha da tabela
+document.getElementById('excluirLinha').addEventListener('click', function () {
 
-    // Quantidade, UV, Pack, Descrição, etc
-    cells[1].querySelector('input').value = '1'; // Quantidade
-    cells[2].querySelector('input').value = listaPrecos[9]; // UV
-    cells[3].querySelector('input').value = listaPrecos[10]; // Pack
-    cells[4].querySelector('input').value = listaPrecos[4]; // Descrição
-
-    // IPI e ST
-    let ipi = (listaPrecos[12] * 100).toFixed(2); // IPI
-    cells[5].querySelector('input').value = ipi + '%'; // IPI
-
-    let icmsST = buscarICMSST(listaPrecos[2], ufCliente);
-    let stValue = 0;
-    if (icmsST) {
-        let valorBase = listaPrecos[11] * cells[1].querySelector('input').value; // Valor base (R$ Unit x Qtd)
-        stValue = (1 + icmsST[11]) * valorBase * icmsST[10] - icmsST[12] * valorBase;
-        cells[6].querySelector('input').value = stValue.toFixed(2); // ST como valor
+    let tbody = document.querySelector('#dadosPedido tbody');
+    if (tbody.rows.length > 0) {
+        tbody.deleteRow(tbody.rows.length - 1);
+        atualizarTotalComImposto(); // Atualiza o total após remover uma linha
+        atualizarTotalVolumes(); // Atualiza o total de volumes após remover uma linha
+        atualizarTotalProdutos(); // Atualiza o total de produtos após remover uma linha
     } else {
-        cells[6].querySelector('input').value = 'N/A';
+        alert("Nenhuma linha para remover");
     }
 
-    // R$ Unit e R$ C/IPI
-    let precoUnit = promocao ? promocao[5] : listaPrecos[11];
-    cells[7].querySelector('input').value = precoUnit.toFixed(2); // R$ Unit
-    let valorCIPI = precoUnit * (1 + listaPrecos[12]); // Cálculo R$ C/IPI
-    cells[8].querySelector('input').value = valorCIPI.toFixed(2); // R$ C/IPI
+});
 
-    // Total R$
-    let total = valorCIPI * cells[1].querySelector('input').value;
-    cells[9].querySelector('input').value = total.toFixed(2); // Total R$
+// Função para preencher os dados da linha com os cálculos baseados no IPI e R$ Unitário
+function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) { 
+
+    let cells = tr.getElementsByTagName('td');
+    let codProduto = cells[0].querySelector('input').value;
+    let codGroup = document.getElementById('codgroup').value;
+
+    let codigoConcatenado = codGroup ? `${codGroup}-${codProduto}` : codProduto;
+    let precoEncontrado = listaPrecosData.find(item => item[0] === codigoConcatenado);
+
+    if (precoEncontrado) {
+        cells[5].querySelector('input').value = (precoEncontrado[12] * 100).toFixed(2) + '%';
+    } else {
+        let itemPorCodigo = listaPrecosData.find(item => item[2] == codProduto);
+        if (itemPorCodigo) {
+            cells[5].querySelector('input').value = (itemPorCodigo[12] * 100).toFixed(2) + '%';
+        } else {
+            cells[5].querySelector('input').value = '';
+        }
+    }
+
+    let produtoPromocao = promocaoData.find(item => item[0] == codProduto);
+
+    if (produtoPromocao) {
+        cells[6].querySelector('input').value = Number(produtoPromocao[5]).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    } else {
+        let precoEncontrado = listaPrecosData.find(item => item[0] === codigoConcatenado);
+        cells[6].querySelector('input').value = Number(precoEncontrado[11]).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    if (codProduto) {
+        let ipiStr = cells[5].querySelector('input').value.replace("%", "");
+        let ipi = Number(ipiStr) / 100;
+        let valorUnitarioStr = cells[6].querySelector('input').value.replace("R$", "").replace(/\./g, "").replace(",", ".");
+        let valorUnitario = Number(valorUnitarioStr);
+
+        if (!isNaN(valorUnitario)) {
+            let valorComIPI = valorUnitario * (1 + ipi);
+            cells[7].querySelector('input').value = valorComIPI.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        } else {
+            cells[7].querySelector('input').value = '';
+        }
+    } else {
+        cells[7].querySelector('input').value = '';
+    }
+
+    if (listaPrecos) {
+        cells[1].querySelector('input').value = '1';
+        cells[2].querySelector('input').value = listaPrecos[9];
+        cells[3].querySelector('input').value = listaPrecos[10];
+        cells[4].querySelector('input').value = listaPrecos[4];
+    }
+
+    function atualizarValorTotal() {
+        if (codProduto) {
+            let quantidade = Number(cells[1].querySelector('input').value);
+            let ipiStr = cells[5].querySelector('input').value.replace("%", "");
+            let ipi = Number(ipiStr) / 100;
+            let valorUnitarioStr = cells[6].querySelector('input').value.replace("R$", "").replace(/\./g, "").replace(",", ".");
+            let valorUnitario = Number(valorUnitarioStr);
+
+            if (!isNaN(valorUnitario)) {
+                let valorComIPI = valorUnitario * (1 + ipi);
+                let valorTotal = valorComIPI * quantidade;
+                cells[8].querySelector('input').value = valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                
+                atualizarTotalComImposto(); // Atualiza o total sempre que o valor total da linha mudar
+                atualizarTotalVolumes(); // Atualiza o total de volumes sempre que a quantidade mudar
+                atualizarTotalProdutos(); // Atualiza o total de produtos sempre que a quantidade ou o valor unitário mudar
+            } else {
+                cells[8].querySelector('input').value = '';
+            }
+        } else {
+            cells[8].querySelector('input').value = '';
+        }
+    }
+
+    cells[1].querySelector('input').addEventListener('input', function() {
+        atualizarValorTotal();
+        atualizarTotalVolumes(); // Atualiza o total de volumes ao modificar a quantidade
+        atualizarTotalProdutos(); // Atualiza o total de produtos ao modificar a quantidade
+    });
+    cells[6].querySelector('input').addEventListener('input', function() {
+        atualizarValorTotal();
+        atualizarTotalProdutos(); // Atualiza o total de produtos ao modificar o valor unitário
+    });
+    cells[8].querySelector('input').addEventListener('input', atualizarTotalComImposto); // Atualiza o total se "TOTAL R$" for modificado
 }
