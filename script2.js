@@ -113,7 +113,6 @@ document.getElementById('cnpj').addEventListener('blur', function () {
         document.getElementById('telefone').value = cliente[4];
         document.getElementById('email').value = cliente[6];
         document.getElementById('email_fiscal').value = cliente[7];
-        document.getElementById('contato').value = cliente[13];
         document.getElementById('cod_cliente').value = cliente[17];
         document.getElementById('pay').value = cliente[14];
         document.getElementById('group').value = cliente[19];
