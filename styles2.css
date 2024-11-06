@@ -78,11 +78,6 @@
 }  
  
 
-
-
-
-
-
 .form-group input {
     padding: 8px;
     border: 1px solid #242323;
@@ -126,7 +121,6 @@
     padding: 15px;
 }
 
-
 .payment-conditions label {
     width: 100%;
     background-color: #333;
@@ -159,33 +153,62 @@
     border: 1px solid #3d3c3c;
 }
 
+
+
+
 /* Media Queries para responsividade */
-@media (max-width: 768px) {
-    .header img {
-        width: 100px;
+
+/* Estilo Geral Responsivo */
+@media (max-width: 1024px) {
+    /* Ajuste geral para tablets */
+    .container {
+        padding: 10px;
     }
     .button-group button {
-        font-size: 12px;
         padding: 8px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Ajustes para dispositivos móveis (tela menor) */
+    .header img {
+        width: 80px;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 5px;
     }
     .form-group {
         grid-template-columns: 1fr;
     }
+    .form-group label,
+    .form-group input {
+        width: 100%;
+        margin: 0;
+    }
+    .table-container {
+        overflow-x: scroll;
+    }
+
+
 }
+
 @media (max-width: 480px) {
-    .header img {
-        width: 80px;
-    }
-    .table th, .table td {
-        padding: 5px;
-    }
-    .button-group {
-        flex-direction: column;
+    /* Ajustes para telas menores como celulares */
+    .header .date {
+        font-size: 10px;
     }
     .button-group button {
         width: 100%;
-    }
-    .payment-conditions table, .observations textarea {
         font-size: 12px;
+    }
+    .table {
+        font-size: 12px;
+    }
+    .observations textarea {
+        font-size: 12px;
+        padding: 8px;
     }
 }
