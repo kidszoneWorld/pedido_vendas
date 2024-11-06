@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administração - KidsZone</title>
+
+    <script>
+        // Verifica se o usuário está autenticado
+        if (sessionStorage.getItem("authenticated") !== "true") {
+            alert("Acesso não autorizado. Redirecionando para a página de login.");
+            window.location.href = "login.html"; // Redireciona para login.html
+        }
+    </script>
+    
     <style>
         body {
             font-family: Arial, sans-serif;

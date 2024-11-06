@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="config.js"></script> <!-- Carrega o arquivo de configuração -->
+    <script>
+        function checkCredentials() {
+            const login = prompt("Digite seu login:");
+            const password = prompt("Digite sua senha:");
+
+            if (login === credentials.login && password === credentials.password) {
+                sessionStorage.setItem("authenticated", "true");
+                window.location.href = "admin.html";
+            } else {
+                alert("Acesso negado. Credenciais incorretas.");
+                location.reload(); // Recarrega a página para tentar novamente
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", checkCredentials);
+    </script>
+</head>
+<body>
+    <h1>Autenticação Necessária</h1>
+    <p>Por favor, insira suas credenciais para acessar a página administrativa.</p>
+</body>
+</html>
