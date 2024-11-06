@@ -209,11 +209,15 @@ document.getElementById('adicionarLinha').addEventListener('click', function () 
     let tbody = document.querySelector('#dadosPedido tbody');
     let tr = document.createElement('tr');
 
+
+
     for (let i = 0; i < 9; i++) {
 
         let td = document.createElement('td');
         let input = document.createElement('input');
         input.type = 'text';
+        input.style.width = '100%'
+        input.style.boxSizing = 'border-box'
 
         if (i === 0) {
             input.addEventListener('blur', function () {
@@ -250,6 +254,8 @@ document.getElementById('adicionarLinha').addEventListener('click', function () 
                 }
             });
         }
+
+
         td.appendChild(input);
         tr.appendChild(td);
     }
@@ -279,10 +285,13 @@ function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) {
     let cells = tr.getElementsByTagName('td');
     let codProduto = cells[0].querySelector('input').value;
     let codGroup = document.getElementById('codgroup').value;
+   
 
 
     for (let i = 0; i < cells.length; i++) {
         // Verifica se o índice é diferente de 0 e 1
+        
+         
         if (i !== 0 && i !== 1) {
             // Se for diferente de 0 ou 1, adiciona readonly ao input
             cells[i].querySelector('input').setAttribute('readonly', true);
