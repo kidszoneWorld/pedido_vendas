@@ -5,13 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FORM-PEDIDO</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" integrity="sha512-MpDFIChbcXl2QgipQrt1VcPHMldRILetapBl5MPCA9Y8r7qvlwx1/Mc9hNTzY+kS5kX6PdoDq41ws1HiVNLdZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" href="styles2.css">
 </head>
 
 <body>
     <div class="container">
         <div class="header">
-            <img src="https://cdn.awsli.com.br/400x300/1624/1624738/logo/26bd476ece.png" alt="Imagem KidsZone">
+            <img src="/logo.png" alt="Imagem KidsZone">
             <div class="date"></div> <!-- A data e hora serão inseridas aqui -->
 
                 <script>
@@ -39,7 +40,7 @@
 
         </div>
         <div class="button-group">
-            <button>Salvar em PDF e enviar e-mail</button>
+            <button id="button_pdf">Salvar em PDF e enviar e-mail</button>
             <button>INFORME O CNPJ</button>
         </div>
         
@@ -132,8 +133,10 @@
                     </tbody>
                 </table>
             </div>
-            <button type="button" id="adicionarLinha">Adicionar Linha</button>
-            <button type="button" id="excluirLinha">Remover Linha</button>
+            <div class="no-print">
+                <button type="button" id="adicionarLinha">Adicionar Linha</button>
+                <button type="button"   id="excluirLinha">Remover Linha</button>
+            </div>
         </div>
 
         <!-- Seção de Condição de Pagamento -->
@@ -155,9 +158,11 @@
             <div class="obs-title">OBSERVAÇÕES</div>
             <textarea placeholder="Escreva alguma observação"></textarea>
         </div>
-        
-        <a target="_blank" href="admin.html">Área Administrativa</a>
     </div>
+    <footer>
+         <a target="_blank" href="admin.html">Área Administrativa</a>
+    </footer>
     <script src="script.js"></script>
+    <script src="pdf.js"></script>
 </body>
 </html>
