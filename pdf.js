@@ -15,7 +15,7 @@ btPdfGeneration.addEventListener("click", () => {
     const options = {
         margin: 0, // Sem margem
         filename: 'pedido_venda',
-        html2canvas: { scale: 2, windowWidth: 1400 }, // Largura de 1200px
+        html2canvas: { scale: 2, windowWidth: 1200 }, // Largura de 1200px
         jsPDF: { unit: "px", format: [1200, 929], orientation: "portrait" }, // Tamanho da página ajustado
         pagebreak: { mode: 'avoid-all' } // Evita quebras de página
     };
