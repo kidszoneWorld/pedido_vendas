@@ -9,11 +9,13 @@
 .container {
     width: 95%;
     max-width: 1000px;
-    margin: auto;
+    margin: 0 auto;
     padding: 20px;
     background-color: #ffffff;
     border: 1px solid #ddd;
 }
+
+
 .header {
     text-align: center;
     padding: 10px 0;

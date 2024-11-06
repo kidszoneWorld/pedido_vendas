@@ -1,7 +1,6 @@
 const btPdfGeneration = document.getElementById('button_pdf');
 
 btPdfGeneration.addEventListener("click", () => {
-    
     // Seleciona os elementos que devem ser ocultados na impressão
     const elementsToHide = document.querySelectorAll('.no-print');
     
@@ -17,10 +16,10 @@ btPdfGeneration.addEventListener("click", () => {
         filename: 'pedido_venda',
         html2canvas: { 
             scale: 2, 
-            windowWidth: 1200, 
+            windowWidth: document.body.scrollWidth, // Define a largura como a largura total da página
             useCORS: true // Permite carregamento de imagens externas
         },
-        jsPDF: { unit: "px", format: [1200, 929], orientation: "portrait" },
+        jsPDF: { unit: "px", format: [document.body.scrollWidth, document.body.scrollHeight], orientation: "portrait" },
         pagebreak: { mode: 'avoid-all' } // Mantém tudo em uma única página
     };
 
