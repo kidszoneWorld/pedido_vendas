@@ -280,6 +280,16 @@ function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) {
     let codProduto = cells[0].querySelector('input').value;
     let codGroup = document.getElementById('codgroup').value;
 
+
+    for (let i = 0; i < cells.length; i++) {
+        // Verifica se o índice é diferente de 0 e 1
+        if (i !== 0 && i !== 1) {
+            // Se for diferente de 0 ou 1, adiciona readonly ao input
+            cells[i].querySelector('input').setAttribute('readonly', true);
+        }
+    }
+    
+
     let codigoConcatenado = codGroup ? `${codGroup}-${codProduto}` : codProduto;
     let precoEncontrado = listaPrecosData.find(item => item[0] === codigoConcatenado);
 
