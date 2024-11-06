@@ -6,13 +6,12 @@
     <title>Administração - KidsZone</title>
 
     <script>
-        // Verifica se o usuário está autenticado
+        // Redireciona para login.html se o usuário não estiver autenticado
         if (sessionStorage.getItem("authenticated") !== "true") {
-            alert("Acesso não autorizado. Redirecionando para a página de login.");
-            window.location.href = "login.html"; // Redireciona para login.html
+            window.location.href = "login.html";
         }
     </script>
-    
+
     <style>
         body {
             font-family: Arial, sans-serif;

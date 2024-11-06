@@ -4,22 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <script src="config.js"></script> <!-- Carrega o arquivo de configuração -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="config.js"></script>
     <script>
         function checkCredentials() {
             const login = prompt("Digite seu login:");
             const password = prompt("Digite sua senha:");
 
-            if (login === credentials.login && password === credentials.password) {
+            // Calcula o hash da senha digitada
+            const passwordHash = CryptoJS.SHA256(password).toString();
+
+            // Verifica o login e o hash da senha
+            if (login === credentials.login && passwordHash === credentials.passwordHash) {
                 sessionStorage.setItem("authenticated", "true");
-                window.location.href = "admin.html";
+                window.location.href = "admin.html"; // Redireciona ao admin.html após autenticação
             } else {
                 alert("Acesso negado. Credenciais incorretas.");
                 location.reload(); // Recarrega a página para tentar novamente
             }
         }
 
-        document.addEventListener("DOMContentLoaded", checkCredentials);
+        // Verifique se o usuário está autenticado ao carregar a página
+        document.addEventListener("DOMContentLoaded", () => {
+            if (sessionStorage.getItem("authenticated") !== "true") {
+                checkCredentials();
+            } else {
+                window.location.href = "admin.html"; // Redireciona ao admin.html se já autenticado
+            }
+        });
     </script>
 </head>
 <body>
