@@ -1,11 +1,12 @@
 const btPdfGeneration = document.getElementById('button_pdf');
 
 btPdfGeneration.addEventListener("click", () => {
-    // Seleciona os elementos que devem ser ocultados na impressão
-    const elementsToHide = document.querySelectorAll('.no-print');
+
+   // Seleciona os elementos que devem ser ocultados na impressão
+   const elementsToHide = document.querySelectorAll('.no-print');
     
-    // Oculta os elementos temporariamente
-    elementsToHide.forEach(el => el.style.display = 'none');
+   // Oculta os elementos temporariamente
+   elementsToHide.forEach(el => el.style.display = 'none');
 
     // Conteúdo do PDF
     const content = document.querySelector('.container');
@@ -14,18 +15,14 @@ btPdfGeneration.addEventListener("click", () => {
     const options = {
         margin: 0, // Sem margem
         filename: 'pedido_venda',
-        html2canvas: { 
-            scale: 2, 
-            windowWidth: document.body.scrollWidth, // Define a largura como a largura total da página
-            useCORS: true // Permite carregamento de imagens externas
-        },
-        jsPDF: { unit: "px", format: [document.body.scrollWidth, document.body.scrollHeight], orientation: "portrait" },
-        pagebreak: { mode: 'avoid-all' } // Mantém tudo em uma única página
+        html2canvas: { scale: 2, windowWidth: 1400 }, // Largura de 1200px
+        jsPDF: { unit: "px", format: [1200, 929], orientation: "portrait" }, // Tamanho da página ajustado
+        pagebreak: { mode: 'avoid-all' } // Evita quebras de página
     };
 
-    // Gera e baixa o PDF
-    html2pdf().set(options).from(content).save().then(() => {
-        // Restaura a exibição dos elementos após a geração do PDF
-        elementsToHide.forEach(el => el.style.display = 'block');
-    });
+        // Gera e baixa o PDF
+        html2pdf().set(options).from(content).save().then(() => {
+            // Restaura a exibição dos elementos após a geração do PDF
+            elementsToHide.forEach(el => el.style.display = 'block');
+        });
 });
