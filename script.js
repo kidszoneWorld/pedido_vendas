@@ -104,7 +104,7 @@ document.getElementById('cnpj').addEventListener('blur', function () {
     if (cliente) {
         document.getElementById('razao_social').value = cliente[3];
         document.getElementById('ie').value = cliente[2];
-        document.getElementById('representante').value = cliente[15];
+        document.getElementById('representante').value = `${cliente[15]} - ${cliente[16]}`;
         document.getElementById('endereco').value = cliente[8];
         document.getElementById('bairro').value = cliente[9];
         document.getElementById('cidade').value = cliente[10];
@@ -288,7 +288,7 @@ function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) {
             cells[i].querySelector('input').setAttribute('readonly', true);
         }
     }
-    
+
 
     let codigoConcatenado = codGroup ? `${codGroup}-${codProduto}` : codProduto;
     let precoEncontrado = listaPrecosData.find(item => item[0] === codigoConcatenado);
